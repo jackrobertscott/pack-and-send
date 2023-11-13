@@ -26,6 +26,7 @@ export function createPackage({
       },
       scripts: {
         build: "tsc",
+        watch: "tsc --watch",
         clean: "rm -rf dist/*",
         dev: "ts-node-dev src/index.ts",
         prepublishOnly: "npm run clean && npm run build",

@@ -2,8 +2,8 @@
 
 import { confirm, input } from "@inquirer/prompts"
 import { execSync } from "child_process"
-import { mkdirSync, writeFileSync } from "fs"
-import { join } from "path"
+import { existsSync, mkdirSync, writeFileSync } from "fs"
+import { basename, join } from "path"
 import { createGitignore } from "./createGitignore"
 import { createPackage } from "./createPackage"
 import { createPrettierrc } from "./createPrettierrc"
@@ -21,11 +21,15 @@ async function main() {
   const startDir = process.cwd()
   const rootDir = join(startDir, name)
   const srcDir = join(rootDir, "src")
-  console.log("Output directory:", rootDir)
-  const desc = await input({ message: "Breif description:" })
+  const desc = await input({ message: "NPM package description:" })
   const author = await input({ message: "Author's name:" })
+  console.log("Output directory:", rootDir)
   const ok = await confirm({ message: "Confirm and proceed:" })
   if (!ok) process.exit()
+
+  // Ensure directory does not exist
+  if (existsSync(rootDir))
+    throw new Error("Directory already exists at: " + rootDir)
 
   // Create the git directory
   mkdirSync(srcDir, { recursive: true })
@@ -33,40 +37,36 @@ async function main() {
   execSync("git init")
 
   // Write and commit the files
-  writeFileSync("readme.md", `# ${name}\n\n${desc}\n`)
-  gitCommit("added readme")
-  writeFileSync(".gitignore", createGitignore())
-  gitCommit("added gitignore")
-  writeFileSync(".prettierrc", createPrettierrc())
-  gitCommit("added prettierrc")
-  writeFileSync("package.json", createPackage({ url, name, author, desc }))
-  gitCommit("added package")
-  writeFileSync("tsconfig.json", createTSConfig())
-  gitCommit("added tsconfig")
-  writeFileSync("src/index.ts", `console.log("Hello, World!")`)
-  writeFileSync("src/index.test.ts", "")
-  gitCommit("added index files")
+  writeCommit("readme.md", `# ${name}\n\n${desc}\n`)
+  writeCommit(".gitignore", createGitignore())
+  writeCommit(".prettierrc", createPrettierrc())
+  writeCommit("package.json", createPackage({ url, name, author, desc }))
+  writeCommit("tsconfig.json", createTSConfig())
+  writeCommit("src/index.ts", `console.log("Hello, World!")`)
+  writeCommit("src/index.test.ts", "")
 
   // Push to GitHub
   execSync(`git branch -M master`)
-  execSync(`git remote add origin`)
+  execSync(`git remote add origin ${url}`)
   execSync(`git push -u origin master`)
 
   // Happy message
   console.log("Repository created 👍")
+
+  // Install dependencies
+  console.log("Installing npm dependencies...")
+  execSync(`npm install`)
+
+  // Finishing message
+  console.log("Finished ✅")
+  console.log("Run: cd " + name)
 }
 
 main()
 
-function gitCommit(message: string) {
-  execSync(`git add .`)
-  execSync(`git commit -m "${message}"`)
-}
-
-function toKebabCase(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[\s_]/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-{2,}/g, "-")
+function writeCommit(filePath: string, content: string) {
+  writeFileSync(filePath, content)
+  const fileName = basename(filePath)
+  execSync(`git add ${filePath}`)
+  execSync(`git commit -m "added ${fileName}"`)
 }
