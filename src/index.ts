@@ -10,9 +10,11 @@ import { createPrettierrc } from "./createPrettierrc"
 import { createTSConfig } from "./createTSConfig"
 
 async function main() {
-  const url = toKebabCase(await input({ message: "GitHub repository url:" }))
+  const url = await input({ message: "GitHub repository url:" })
   if (!url.startsWith("https://"))
     throw new Error("Invalid repository url provided")
+  if (!url.endsWith(".git"))
+    throw new Error(`Repository url must end with ".git"`)
   let name = url.split("/").pop()?.trim()
   if (name?.endsWith(".git")) name = name.slice(0, -4)
   if (!name || !name.match(/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/))
@@ -45,6 +47,14 @@ async function main() {
   writeFileSync("src/index.ts", `console.log("Hello, World!")`)
   writeFileSync("src/index.test.ts", "")
   gitCommit("added index files")
+
+  // Push to GitHub
+  execSync(`git branch -M master`)
+  execSync(`git remote add origin`)
+  execSync(`git push -u origin master`)
+
+  // Happy message
+  console.log("Repository created 👍")
 }
 
 main()
