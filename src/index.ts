@@ -5,6 +5,7 @@ import { execSync } from "child_process"
 import { existsSync, mkdirSync, writeFileSync } from "fs"
 import { basename, join } from "path"
 import { createGitignore } from "./createGitignore"
+import { createJestConfig } from "./createJestConfig"
 import { createPackage } from "./createPackage"
 import { createPrettierrc } from "./createPrettierrc"
 import { createTSConfig } from "./createTSConfig"
@@ -42,6 +43,7 @@ async function main() {
   writeCommit(".prettierrc", createPrettierrc())
   writeCommit("package.json", createPackage({ url, name, author, desc }))
   writeCommit("tsconfig.json", createTSConfig())
+  writeCommit("jest.config.json", createJestConfig())
   writeCommit("src/index.ts", `console.log("Hello, World!")`)
   writeCommit("src/index.test.ts", "")
 
