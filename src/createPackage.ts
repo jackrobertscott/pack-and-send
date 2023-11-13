@@ -29,7 +29,7 @@ export function createPackage({
         watch: "tsc --watch",
         clean: "rm -rf dist/*",
         dev: "ts-node-dev src/index.ts",
-        prepublishOnly: "npm run clean && npm run build",
+        prepublishOnly: "npm run test && npm run clean && npm run build",
         test: "jest",
       },
       devDependencies: {
