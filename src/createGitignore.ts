@@ -1,0 +1,28 @@
+export function createGitignore() {
+  return [
+    ".DS_Store",
+    "*.local",
+    "*.log*",
+    "*.env*",
+    "!.env.example",
+    "*.suo",
+    "*.ntvs*",
+    "*.njsproj",
+    "*.sln",
+    "*.sw?",
+    "*.lock",
+    "package-lock.json",
+    "node_modules",
+    "coverage",
+    "build",
+    "dist",
+    "logs",
+    "lib",
+    ".docz",
+    ".cache",
+    ".vercel",
+    ".vscode",
+    ".idea",
+    ".yarn",
+  ].join("\n")
+}

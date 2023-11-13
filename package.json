@@ -11,6 +11,9 @@
     "readme.md"
   ],
   "keywords": [],
+  "bin": {
+    "pack": "dist/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jackrobertscott/pack-and-send"
