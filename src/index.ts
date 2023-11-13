@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { input } from "@inquirer/prompts"
+import { confirm, input } from "@inquirer/prompts"
 import { execSync } from "child_process"
 import { mkdirSync, writeFileSync } from "fs"
 import { join } from "path"
@@ -22,6 +22,8 @@ async function main() {
   console.log("Output directory:", rootDir)
   const desc = await input({ message: "Breif description:" })
   const author = await input({ message: "Author's name:" })
+  const ok = await confirm({ message: "Confirm and proceed:" })
+  if (!ok) process.exit()
 
   // Create the git directory
   mkdirSync(srcDir, { recursive: true })
