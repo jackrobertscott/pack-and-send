@@ -27,8 +27,8 @@ export function createPackage({
       scripts: {
         build: "tsc",
         watch: "tsc --watch",
-        clean: "rm -rf dist/*",
         dev: "ts-node-dev src/index.ts",
+        clean: "find dist ! -name 'index.*' ! -name 'dist' -exec rm -rf {} +",
         prepublishOnly: "npm run test && npm run clean && npm run build",
         test: "jest",
       },
