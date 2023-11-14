@@ -9,7 +9,6 @@ export function createTSConfig() {
         forceConsistentCasingInFileNames: true,
         module: "CommonJS",
         target: "ES2020",
-        lib: ["ES2020"],
         outDir: "dist",
       },
       include: ["src"],
