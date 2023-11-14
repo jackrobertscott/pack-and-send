@@ -8,15 +8,16 @@ import { createGitignore } from "./createGitignore"
 import { createJestConfig } from "./createJestConfig"
 import { createPackage } from "./createPackage"
 import { createPrettierrc } from "./createPrettierrc"
+import { createReadme } from "./createReadme"
 import { createTSConfig } from "./createTSConfig"
 
 async function main() {
-  const url = await input({ message: "GitHub repository url:" })
-  if (!url.startsWith("https://"))
+  const gitUrl = await input({ message: "GitHub repository url:" })
+  if (!gitUrl.startsWith("https://"))
     throw new Error("Invalid repository url provided")
-  if (!url.endsWith(".git"))
+  if (!gitUrl.endsWith(".git"))
     throw new Error(`Repository url must end with ".git"`)
-  let name = url.split("/").pop()?.slice(0, -4)
+  let name = gitUrl.split("/").pop()?.slice(0, -4)
   if (!name || !name.match(/^[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$/))
     throw new Error("Unable to extract name from url")
   const startDir = process.cwd()
@@ -38,10 +39,11 @@ async function main() {
   execSync("git init")
 
   // Write and commit the files
-  writeCommit("readme.md", `# ${name}\n\n${desc}\n`)
+  const options = { gitUrl, name, author, desc }
+  writeCommit("readme.md", createReadme(options))
   writeCommit(".gitignore", createGitignore())
   writeCommit(".prettierrc", createPrettierrc())
-  writeCommit("package.json", createPackage({ url, name, author, desc }))
+  writeCommit("package.json", createPackage(options))
   writeCommit("tsconfig.json", createTSConfig())
   writeCommit("jest.config.json", createJestConfig())
   writeCommit("src/index.ts", `console.log("Hello, World!")`)
@@ -49,7 +51,7 @@ async function main() {
 
   // Push to GitHub
   execSync(`git branch -M master`)
-  execSync(`git remote add origin ${url}`)
+  execSync(`git remote add origin ${gitUrl}`)
   execSync(`git push -u origin master`)
 
   // Happy message

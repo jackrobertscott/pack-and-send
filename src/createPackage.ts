@@ -1,10 +1,10 @@
 export function createPackage({
-  url,
+  gitUrl,
   name,
   desc,
   author,
 }: {
-  url: string
+  gitUrl: string
   name: string
   desc: string
   author: string
@@ -22,7 +22,7 @@ export function createPackage({
       keywords: [],
       repository: {
         type: "git",
-        url,
+        url: gitUrl,
       },
       scripts: {
         build: "tsc",
